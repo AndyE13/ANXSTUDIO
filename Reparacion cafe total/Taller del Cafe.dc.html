@@ -121,19 +121,6 @@
     @keyframes tdcPulse{0%,100%{opacity:.25;transform:scale(1)}50%{opacity:.7;transform:scale(1.12)}}
     @keyframes tdcScrollHint{0%{transform:translateY(-6px);opacity:0}35%{opacity:1}100%{transform:translateY(14px);opacity:0}}
     @media (prefers-reduced-motion: reduce){*{animation-duration:.01ms !important;transition-duration:.01ms !important}}
-    @media (max-width:899px){
-      [data-video-wrap]{display:none!important}
-      [data-canvas-wrap]{display:none!important}
-      [data-hud]{display:none!important}
-      /* Cabecera compacta de una sola línea: nunca se apila ni crece. */
-      [data-nav]{flex-wrap:nowrap!important;gap:14px!important;padding:11px 16px!important}
-      [data-nav-cta]{display:none!important}
-      [data-burger]{display:inline-flex!important}
-      /* Los enlaces pasan a un panel desplegable anclado bajo la cabecera. */
-      [data-tabs]{position:absolute!important;top:100%;right:0;left:auto;width:min(330px,86vw);flex-direction:column!important;align-items:stretch!important;flex-wrap:nowrap!important;gap:0!important;font-size:16px!important;padding:6px 22px 16px;background:linear-gradient(180deg,rgba(9,9,10,.97),rgba(7,7,8,.99));backdrop-filter:blur(22px) saturate(140%);-webkit-backdrop-filter:blur(22px) saturate(140%);border-left:1px solid rgba(197,160,89,.14);border-bottom:1px solid rgba(197,160,89,.14);border-bottom-left-radius:20px;box-shadow:-22px 26px 60px rgba(0,0,0,.62);max-height:calc(100vh - 82px);overflow-y:auto;overscroll-behavior:contain;opacity:0;visibility:hidden;pointer-events:none;transform:translate3d(0,-10px,0);transition:opacity .34s ease,transform .42s cubic-bezier(.22,1,.36,1),visibility .34s}
-      [data-nav][data-open] [data-tabs]{opacity:1;visibility:visible;pointer-events:auto;transform:none}
-      [data-tabs] a{padding:15px 2px!important;box-shadow:inset 0 -1px 0 rgba(255,255,255,.055)}
-    }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -145,19 +132,12 @@
 <div data-cursor-ring="" style="position:fixed;top:0;left:0;width:38px;height:38px;margin:-19px 0 0 -19px;border:1px solid rgba(197,160,89,.55);border-radius:50%;pointer-events:none;z-index:200;opacity:0;mix-blend-mode:screen"></div>
 <div data-cursor-dot="" style="position:fixed;top:0;left:0;width:5px;height:5px;margin:-2.5px 0 0 -2.5px;background:#dfb15b;border-radius:50%;pointer-events:none;z-index:201;opacity:0"></div>
 
-<!-- ══ LUZ AMBIENTAL GLOBAL ══
-     Una sola fuente de luz fija al viewport, no un gradient por sección.
-     Al no desplazarse con el documento, jamás produce bordes ni bandas
-     entre zonas: la página se lee como un mismo espacio oscuro. -->
-<div data-ambient="" style="position:fixed;inset:-14vh -12vw;z-index:0;pointer-events:none;will-change:transform;background:radial-gradient(62% 52% at 74% 20%,rgba(114,92,56,.115),transparent 70%),radial-gradient(58% 58% at 4% 56%,rgba(62,60,66,.085),transparent 74%),radial-gradient(130% 72% at 50% 108%,rgba(74,60,38,.075),transparent 72%)"></div>
-<div data-ambient-warm="" style="position:fixed;inset:-14vh -12vw;z-index:0;pointer-events:none;mix-blend-mode:screen;opacity:.5;background:radial-gradient(48% 42% at 60% 44%,rgba(98,78,48,.15),transparent 72%)"></div>
-
 <!-- ══ NAVEGACIÓN — 6 pestañas con estado activo ══ -->
 <header data-nav="" data-screen-label="Nav" style="position:fixed;top:0;left:0;right:0;z-index:80;display:flex;align-items:center;justify-content:space-between;gap:24px;padding:16px clamp(18px,4vw,54px);background:linear-gradient(180deg,rgba(7,7,8,.92),rgba(7,7,8,.4));backdrop-filter:blur(20px) saturate(140%);-webkit-backdrop-filter:blur(20px) saturate(140%);border-bottom:1px solid rgba(255,255,255,.05)">
   <a href="#inicio" data-hover="" style="display:flex;align-items:center;gap:13px;color:#f4f1ec">
-    <span style="position:relative;display:grid;place-items:center;width:46px;height:46px;flex:0 0 auto">
-      <span style="position:absolute;width:38px;height:38px;border-radius:50%;background:radial-gradient(circle,rgba(197,160,89,.32),transparent 70%);filter:blur(6px)"></span>
-      <img src="uploads/image-removebg-preview.png" alt="Reparación Cafeteras Total" width="181" height="224" decoding="async" style="position:relative;display:block;width:auto;height:44px;object-fit:contain;filter:saturate(1.06) contrast(1.06) brightness(1.04) drop-shadow(0 2px 6px rgba(0,0,0,.55)) drop-shadow(0 0 10px rgba(197,160,89,.22))" />
+    <span style="position:relative;display:grid;place-items:center;width:42px;height:42px;border:1px solid rgba(197,160,89,.5);border-radius:50%">
+      <span style="width:9px;height:15px;border-radius:50%;background:linear-gradient(160deg,#dfb15b,#8c6a33);transform:rotate(-12deg)"></span>
+      <span style="position:absolute;width:1px;height:15px;background:rgba(7,7,8,.65);transform:rotate(-12deg)"></span>
     </span>
     <span style="display:flex;flex-direction:column;line-height:1.12;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:500">
       <span>Reparación</span>
@@ -165,7 +145,7 @@
     </span>
   </a>
 
-  <nav id="tdc-tabs" data-tabs="" style="display:flex;align-items:center;gap:clamp(10px,1.6vw,26px);flex-wrap:wrap;font-size:13.5px">
+  <nav data-tabs="" style="display:flex;align-items:center;gap:clamp(10px,1.6vw,26px);flex-wrap:wrap;font-size:13.5px">
     <a href="#inicio" data-tab="inicio" data-hover="" style="padding:7px 4px;color:#dfb15b;border-bottom:1px solid #c5a059;transition:color .4s,border-color .4s">Inicio</a>
     <a href="#reparacion" data-tab="reparacion" data-hover="" style="padding:7px 4px;color:rgba(244,241,236,.7);border-bottom:1px solid transparent;transition:color .4s,border-color .4s">Reparación</a>
     <a href="#proceso" data-tab="proceso" data-hover="" style="padding:7px 4px;color:rgba(244,241,236,.7);border-bottom:1px solid transparent;transition:color .4s,border-color .4s">Proceso</a>
@@ -174,21 +154,13 @@
     <a href="#contacto" data-tab="contacto" data-hover="" style="padding:7px 4px;color:rgba(244,241,236,.7);border-bottom:1px solid transparent;transition:color .4s,border-color .4s">Contacto</a>
   </nav>
 
-  <button data-burger="" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="tdc-tabs" style="display:none;align-items:center;justify-content:center;width:46px;height:46px;flex:0 0 auto;padding:0;border:1px solid rgba(197,160,89,.45);border-radius:999px;background:linear-gradient(180deg,rgba(197,160,89,.14),rgba(197,160,89,.04));color:#f0dcb2;cursor:pointer;-webkit-tap-highlight-color:transparent">
-    <span style="position:relative;display:block;width:17px;height:11px">
-      <i style="position:absolute;top:0;left:0;width:100%;height:1.5px;background:currentColor;transition:transform .38s cubic-bezier(.22,1,.36,1),opacity .25s"></i>
-      <i style="position:absolute;top:5px;left:0;width:100%;height:1.5px;background:currentColor;transition:transform .38s cubic-bezier(.22,1,.36,1),opacity .25s"></i>
-      <i style="position:absolute;top:10px;left:0;width:100%;height:1.5px;background:currentColor;transition:transform .38s cubic-bezier(.22,1,.36,1),opacity .25s"></i>
-    </span>
-  </button>
-
-  <div data-nav-cta="" style="display:flex;align-items:center;gap:14px">
+  <div style="display:flex;align-items:center;gap:14px">
     <a href="#contacto" data-magnetic="" data-hover="" style="display:inline-flex;align-items:center;gap:9px;padding:12px 22px;border:1px solid rgba(197,160,89,.55);border-radius:999px;font-size:13px;font-weight:500;color:#f0dcb2;background:linear-gradient(180deg,rgba(197,160,89,.14),rgba(197,160,89,.04));white-space:nowrap">Solicitar diagnóstico</a>
   </div>
 </header>
 
 <!-- ══ 1 · INICIO — Hero con visor 3D Three.js ══ -->
-<section id="inicio" data-hero="" data-screen-label="Hero" style="position:relative;z-index:1;min-height:100vh;display:flex;align-items:center;padding:clamp(112px,14vh,170px) clamp(20px,5vw,64px) clamp(252px,31vh,340px);overflow:hidden;background:radial-gradient(120% 90% at 78% 42%,#151009 0%,#0b0a09 46%,#070708 100%)">
+<section id="inicio" data-hero="" data-screen-label="Hero" style="position:relative;min-height:100vh;display:flex;align-items:center;padding:clamp(112px,14vh,170px) clamp(20px,5vw,64px) clamp(252px,31vh,340px);overflow:hidden;background:radial-gradient(120% 90% at 78% 42%,#151009 0%,#0b0a09 46%,#070708 100%)">
   <!-- Video de la máquina: fondo cinematográfico del costado derecho -->
   <div data-video-wrap="" style="position:absolute;top:0;right:0;bottom:0;left:30%;z-index:0;overflow:hidden;pointer-events:none">
     <video data-hero-video="" src="uploads/espressomachine.mp4" autoPlay="autoplay" loop="loop" muted="muted" playsInline="playsinline" preload="auto" disablePictureInPicture="disablepictureinpicture" style="position:absolute;top:50%;left:50%;width:100%;height:100%;transform:translate(-50%,-50%);object-fit:cover;object-position:50% 40%"></video>
@@ -201,11 +173,7 @@
     <canvas data-hero-canvas="" style="position:absolute;inset:0;width:100%;height:100%;display:block"></canvas>
   </div>
   <div style="position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(100deg,rgba(7,7,8,.95) 6%,rgba(7,7,8,.72) 34%,rgba(7,7,8,.05) 62%,rgba(7,7,8,.55) 100%)"></div>
-  <div style="position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,rgba(7,7,8,.7),transparent 22%,transparent 58%,rgba(7,7,8,.72) 88%,#070708 100%)"></div>
-  <!-- Luz ambiental fuera de cámara: levanta el negro del costado izquierdo a grafito cálido -->
-  <div style="position:absolute;inset:0;z-index:2;pointer-events:none;mix-blend-mode:screen;background:radial-gradient(78% 92% at 6% 58%,rgba(74,62,44,.62) 0%,rgba(48,42,34,.34) 34%,rgba(28,28,32,.16) 58%,transparent 76%)"></div>
-  <div style="position:absolute;inset:0;z-index:2;pointer-events:none;mix-blend-mode:screen;background:radial-gradient(60% 70% at 40% 18%,rgba(120,96,58,.3),transparent 66%),radial-gradient(52% 60% at 26% 96%,rgba(96,74,42,.26),transparent 70%)"></div>
-  <div style="position:absolute;inset:0;z-index:2;pointer-events:none;background:radial-gradient(66% 76% at 50% 50%,transparent 42%,rgba(4,4,5,.5) 100%)"></div>
+  <div style="position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(180deg,rgba(7,7,8,.7),transparent 22%,transparent 62%,#070708 99%)"></div>
 
   <div style="position:relative;z-index:3;width:100%;max-width:1320px;margin:0 auto">
     <div style="max-width:660px">
@@ -322,8 +290,8 @@
 </section>
 
 <!-- ══ Marquesina de marcas ══ -->
-<section style="position:relative;z-index:1;padding:24px 0;overflow:hidden">
-  <div style="position:relative;display:flex;width:max-content;animation:tdcMarquee 34s linear infinite;-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)">
+<section style="position:relative;padding:24px 0;border-top:1px solid rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.05);background:#09090a;overflow:hidden">
+  <div style="display:flex;width:max-content;animation:tdcMarquee 34s linear infinite">
     <div style="display:flex;align-items:center;gap:clamp(38px,5vw,74px);padding-right:clamp(38px,5vw,74px);font-family:'Playfair Display',serif;font-size:clamp(15px,1.5vw,20px);letter-spacing:.16em;text-transform:uppercase;color:rgba(244,241,236,.3);white-space:nowrap">
       <span>La Marzocco</span><span style="color:#c5a059">✦</span><span>Rocket Espresso</span><span style="color:#c5a059">✦</span><span>Nuova Simonelli</span><span style="color:#c5a059">✦</span><span>Victoria Arduino</span><span style="color:#c5a059">✦</span><span>Rancilio</span><span style="color:#c5a059">✦</span><span>Slayer</span><span style="color:#c5a059">✦</span><span>Mahlkönig</span><span style="color:#c5a059">✦</span>
     </div>
@@ -334,8 +302,8 @@
 </section>
 
 <!-- ══ 3 · REPARACIÓN — dolor técnico + diagnóstico profundo ══ -->
-<section id="reparacion" data-screen-label="Reparación" style="position:relative;z-index:1;padding:clamp(90px,13vh,160px) clamp(20px,5vw,64px)">
-  <div style="position:relative;max-width:1320px;margin:0 auto">
+<section id="reparacion" data-screen-label="Reparación" style="position:relative;padding:clamp(90px,13vh,160px) clamp(20px,5vw,64px);background:linear-gradient(180deg,#070708,#0a0908 60%,#070708)">
+  <div style="max-width:1320px;margin:0 auto">
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:clamp(28px,4vw,72px);align-items:end;margin-bottom:clamp(46px,6vh,78px)">
       <div>
         <div data-reveal="" style="font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:#c5a059;margin-bottom:22px">¿Tu máquina no rinde como antes?</div>
@@ -419,8 +387,8 @@
 </section>
 
 <!-- ══ 4 · PROCESO — timeline de 5 pasos ══ -->
-<section id="proceso" data-screen-label="Proceso" style="position:relative;z-index:1;padding:clamp(90px,13vh,160px) clamp(20px,5vw,64px);overflow:hidden">
-  <div data-parallax="" data-speed="14" style="position:absolute;top:-10%;left:50%;width:min(1000px,90vw);height:520px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(circle,rgba(197,160,89,.05),transparent 70%);filter:blur(40px);pointer-events:none"></div>
+<section id="proceso" data-screen-label="Proceso" style="position:relative;padding:clamp(90px,13vh,160px) clamp(20px,5vw,64px);background:#0a0909;border-top:1px solid rgba(255,255,255,.05);overflow:hidden">
+  <div data-parallax="" data-speed="14" style="position:absolute;top:-10%;left:50%;width:min(1000px,90vw);height:520px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(circle,rgba(197,160,89,.09),transparent 66%);filter:blur(30px);pointer-events:none"></div>
   <div style="position:relative;max-width:1320px;margin:0 auto">
     <div style="text-align:center;margin-bottom:clamp(56px,8vh,96px)">
       <div data-reveal="" style="font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:#c5a059;margin-bottom:20px">Nuestro proceso</div>
@@ -486,8 +454,8 @@
 </section>
 
 <!-- ══ Métricas ══ -->
-<section style="position:relative;z-index:1;padding:clamp(56px,8vh,90px) clamp(20px,5vw,64px)">
-  <div style="position:relative;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:clamp(28px,4vw,56px);max-width:1320px;margin:0 auto">
+<section style="padding:clamp(56px,8vh,90px) clamp(20px,5vw,64px);background:#070708;border-top:1px solid rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.05)">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:clamp(28px,4vw,56px);max-width:1320px;margin:0 auto">
     <div data-reveal="" style="text-align:center">
       <div style="font-family:'Playfair Display',serif;font-size:clamp(2.4rem,4vw,3.4rem);line-height:1"><span data-count="" data-to="12">0</span></div>
       <div style="margin-top:12px;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:rgba(244,241,236,.42)">Años de taller</div>
@@ -508,8 +476,8 @@
 </section>
 
 <!-- ══ 5 · CAFÉ + 6 · CURSOS — dos líneas nuevas del taller ══ -->
-<section id="cafe" data-screen-label="Café y cursos" style="position:relative;z-index:1;padding:clamp(90px,13vh,160px) clamp(20px,5vw,64px)">
-  <div style="position:relative;max-width:1320px;margin:0 auto">
+<section id="cafe" data-screen-label="Café y cursos" style="padding:clamp(90px,13vh,160px) clamp(20px,5vw,64px);background:linear-gradient(180deg,#070708,#0b0a09 46%,#070708)">
+  <div style="max-width:1320px;margin:0 auto">
     <div style="text-align:center;margin-bottom:clamp(44px,6vh,74px)">
       <div data-reveal="" style="font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:#c5a059;margin-bottom:20px">Nuevo en el taller</div>
       <h2 style="margin:0;font-family:'Playfair Display',serif;font-weight:400;font-size:clamp(2.1rem,4vw,3.4rem);line-height:1.1;letter-spacing:-.02em;color:#e8e3dc">
@@ -566,8 +534,8 @@
 </section>
 
 <!-- ══ 7 · CONTACTO — formulario + datos Guadalajara ══ -->
-<section id="contacto" data-screen-label="Contacto" style="position:relative;z-index:1;padding:clamp(90px,13vh,160px) clamp(20px,5vw,64px) clamp(100px,13vh,150px)">
-  <div style="position:relative;max-width:1320px;margin:0 auto">
+<section id="contacto" data-screen-label="Contacto" style="position:relative;padding:clamp(90px,13vh,160px) clamp(20px,5vw,64px) clamp(100px,13vh,150px);background:linear-gradient(180deg,#070708,#0b0a09)">
+  <div style="max-width:1320px;margin:0 auto">
     <div style="text-align:center;margin-bottom:clamp(44px,6vh,72px)">
       <div data-reveal="" style="font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:#c5a059;margin-bottom:20px">Contacto</div>
       <h2 style="margin:0;font-family:'Playfair Display',serif;font-weight:400;font-size:clamp(2.1rem,4vw,3.6rem);line-height:1.06;letter-spacing:-.02em">
@@ -636,13 +604,12 @@
 </section>
 
 <!-- ══ FOOTER ══ -->
-<footer data-screen-label="Footer" style="position:relative;z-index:1;padding:clamp(56px,8vh,90px) clamp(20px,5vw,64px) 120px">
-  <div style="position:relative;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:clamp(30px,4vw,58px);max-width:1320px;margin:0 auto">
+<footer data-screen-label="Footer" style="padding:clamp(56px,8vh,90px) clamp(20px,5vw,64px) 120px;background:#09090a;border-top:1px solid rgba(255,255,255,.06)">
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:clamp(30px,4vw,58px);max-width:1320px;margin:0 auto">
     <div>
       <div style="display:flex;align-items:center;gap:13px;margin-bottom:20px">
-        <span style="position:relative;display:grid;place-items:center;width:44px;height:44px;flex:0 0 auto">
-          <span style="position:absolute;width:34px;height:34px;border-radius:50%;background:radial-gradient(circle,rgba(197,160,89,.22),transparent 70%);filter:blur(6px)"></span>
-          <img src="uploads/image-removebg-preview.png" alt="Reparación Cafeteras Total" width="181" height="224" loading="lazy" decoding="async" style="position:relative;display:block;width:auto;height:42px;object-fit:contain;filter:saturate(1.02) contrast(1.04) brightness(.98) drop-shadow(0 2px 6px rgba(0,0,0,.5))" />
+        <span style="display:grid;place-items:center;width:40px;height:40px;border:1px solid rgba(197,160,89,.5);border-radius:50%">
+          <span style="width:8px;height:14px;border-radius:50%;background:linear-gradient(160deg,#dfb15b,#8c6a33);transform:rotate(-12deg)"></span>
         </span>
         <span style="display:flex;flex-direction:column;line-height:1.12;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;font-weight:500"><span>Reparación</span><span style="color:rgba(244,241,236,.6)">Cafeteras Total</span></span>
       </div>
@@ -673,7 +640,7 @@
       </div>
     </div>
   </div>
-  <div style="position:relative;display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between;max-width:1320px;margin:clamp(40px,5vh,64px) auto 0;padding-top:26px;border-top:1px solid rgba(255,255,255,.06);font-size:11.5px;color:rgba(244,241,236,.32)">
+  <div style="display:flex;flex-wrap:wrap;gap:18px;justify-content:space-between;max-width:1320px;margin:clamp(40px,5vh,64px) auto 0;padding-top:26px;border-top:1px solid rgba(255,255,255,.06);font-size:11.5px;color:rgba(244,241,236,.32)">
     <span>© 2026 Reparación Cafeteras Total. Todos los derechos reservados.</span>
     <span style="display:flex;gap:22px"><a href="#inicio" style="color:rgba(244,241,236,.32)">Aviso de privacidad</a><a href="#inicio" style="color:rgba(244,241,236,.32)">Términos y condiciones</a></span>
   </div>
@@ -745,8 +712,6 @@ class Component extends DCLogic {
     this.initSpotlight();
     this.initCarousel();
     this.initForm();
-    this.initBurger();
-    this.initAmbient();
     this.initVideo();
     this.initThree();
     this.initGsap();
@@ -768,57 +733,6 @@ class Component extends DCLogic {
     if (vw) vw.style.display = this._use3d ? 'none' : 'block';
   }
 
-  /* ── Menú móvil ───────────────────────────────────────────────
-     El botón y el panel sólo existen por CSS bajo 900px; en escritorio
-     la barra queda exactamente igual. Cierra al elegir destino, al
-     tocar fuera, con Escape, al hacer scroll y al volver a escritorio. */
-  initBurger() {
-    const nav = this.$('[data-nav]'), btn = this.$('[data-burger]');
-    if (!nav || !btn) return;
-    const bars = btn.querySelectorAll('i');
-    const open = () => nav.hasAttribute('data-open');
-    const set = (on) => {
-      if (on) nav.setAttribute('data-open', ''); else nav.removeAttribute('data-open');
-      btn.setAttribute('aria-expanded', on ? 'true' : 'false');
-      btn.setAttribute('aria-label', on ? 'Cerrar menú' : 'Abrir menú');
-      if (bars[0]) bars[0].style.transform = on ? 'translateY(5px) rotate(45deg)' : 'none';
-      if (bars[1]) bars[1].style.opacity = on ? '0' : '1';
-      if (bars[2]) bars[2].style.transform = on ? 'translateY(-5px) rotate(-45deg)' : 'none';
-    };
-    this.on(btn, 'click', (e) => { e.preventDefault(); e.stopPropagation(); set(!open()); });
-    this.on(nav, 'click', (e) => { if (e.target.closest('[data-tab]')) set(false); });
-    this.on(document, 'pointerdown', (e) => { if (open() && !e.target.closest('[data-nav]')) set(false); });
-    this.on(document, 'keydown', (e) => { if (e.key === 'Escape') set(false); });
-    this.on(window, 'scroll', () => { if (open()) set(false); }, { passive: true });
-    this.on(window, 'resize', () => { if (window.innerWidth >= 900 && open()) set(false); });
-    set(false);
-  }
-
-  /* ── Luz ambiental global ────────────────────────────────────────
-     Una sola fuente para todo el documento. Las capas están fijas al
-     viewport: la luz no se corta en los límites de las secciones.
-     Al hacer scroll deriva unos pocos vw/vh y su intensidad respira,
-     de modo que la sensación es de recorrer un espacio iluminado. */
-  initAmbient() {
-    const amb = this.$('[data-ambient]'), warm = this.$('[data-ambient-warm]');
-    if (!amb) return;
-    let last = -1;
-    const tick = () => {
-      const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-      const p = Math.max(0, Math.min(1, window.scrollY / max));
-      if (Math.abs(p - last) < .002) return;
-      last = p;
-      amb.style.transform = 'translate3d(' + (-p * 5).toFixed(2) + 'vw,' + (p * 3.5).toFixed(2) + 'vh,0)';
-      if (warm) {
-        warm.style.transform = 'translate3d(' + (p * 4).toFixed(2) + 'vw,' + (-p * 2.5).toFixed(2) + 'vh,0)';
-        warm.style.opacity = (.42 + Math.sin(p * Math.PI) * .45).toFixed(3);
-      }
-    };
-    this.on(window, 'scroll', tick, { passive: true });
-    this.on(window, 'resize', tick);
-    tick();
-  }
-
   /* ── Video de fondo del Hero ─────────────────────────────────────
      Vertical de origen: se recorta con object-fit:cover sobre el
      costado derecho, sin deformar ni mostrar barras negras. */
@@ -829,7 +743,7 @@ class Component extends DCLogic {
     vid.muted = true; vid.defaultMuted = true; vid.loop = true; vid.playsInline = true;
     vid.setAttribute('playsinline', '');
     vid.setAttribute('muted', '');
-    const play = () => { if (this._scrubbing) return; const p = vid.play(); if (p && p.catch) p.catch(() => {}); };
+    const play = () => { const p = vid.play(); if (p && p.catch) p.catch(() => {}); };
     play();
     this.on(vid, 'loadeddata', play);
     this.on(vid, 'canplay', play);
@@ -837,7 +751,7 @@ class Component extends DCLogic {
     this.on(window, 'pointerdown', play, { once: true });
     /* Algunos navegadores pausan el video cuando el marco pierde el foco.
        Vigilante ligero: lo reanuda sin recargarlo ni reiniciar el loop. */
-    const watch = setInterval(() => { if (vid.paused && !document.hidden && !this._scrubbing) play(); }, 1200);
+    const watch = setInterval(() => { if (vid.paused && !document.hidden) play(); }, 1200);
     this._cleanups.push(() => clearInterval(watch));
     this._playVideo = play;
 
@@ -857,53 +771,6 @@ class Component extends DCLogic {
     };
     frame();
     this.on(window, 'resize', frame);
-    this.initScrub(vid);
-  }
-
-  /* ── Scroll-scrubbing del plano del Hero ─────────────────────────
-     En la parte más alta el plano corre en loop (la escena está viva).
-     En cuanto el usuario avanza, el scroll toma el control del tiempo
-     del video: la cámara avanza sólo si él avanza. El movimiento se
-     interpola en rAF para que el seek no se sienta escalonado.
-     Se desactiva en móvil (donde el video no se muestra) y con
-     prefers-reduced-motion. */
-  initScrub(vid) {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    const hero = this.$('[data-hero]');
-    if (!hero) return;
-    let target = 0, cur = 0, raf = null, active = false;
-    const dur = () => (isFinite(vid.duration) && vid.duration > .4 ? vid.duration - .06 : 0);
-    const step = () => {
-      raf = null;
-      const d = dur(); if (!d) return;
-      cur += (target - cur) * .14;
-      if (Math.abs(target - cur) < .006) cur = target;
-      try { vid.currentTime = Math.max(0, Math.min(d, cur)); } catch (e) {}
-      if (cur !== target) raf = requestAnimationFrame(step);
-    };
-    const release = () => {
-      if (!active) return;
-      active = false; this._scrubbing = false; vid.loop = true;
-      const p = vid.play(); if (p && p.catch) p.catch(() => {});
-    };
-    const onScroll = () => {
-      const d = dur();
-      if (!d || window.innerWidth < 900) { release(); return; }
-      const h = hero.offsetHeight || window.innerHeight;
-      const p = Math.max(0, Math.min(1, window.scrollY / (h * .9)));
-      if (p <= .006) { release(); return; }
-      if (!active) {
-        active = true; this._scrubbing = true; vid.loop = false; vid.pause();
-        cur = p * d;                    /* engancha sin rebobinar */
-      }
-      target = p * d;
-      if (!raf) raf = requestAnimationFrame(step);
-    };
-    this.on(window, 'scroll', onScroll, { passive: true });
-    this.on(window, 'resize', onScroll);
-    this.on(vid, 'loadedmetadata', onScroll);
-    onScroll();
-    this._cleanups.push(() => { if (raf) cancelAnimationFrame(raf); });
   }
 
   /* ── Cursor de lujo ─────────────────────────────────────────────── */
@@ -1323,9 +1190,7 @@ class Component extends DCLogic {
       let cur = 'inicio';
       tabs.forEach(a => {
         const s = document.getElementById(a.getAttribute('data-tab'));
-        /* Posición real en el documento: offsetTop depende del offsetParent y
-           se rompe si la sección vive dentro de un wrapper posicionado. */
-        if (s && s.getBoundingClientRect().top + window.scrollY <= mid) cur = a.getAttribute('data-tab');
+        if (s && s.offsetTop <= mid) cur = a.getAttribute('data-tab');
       });
       if (cur !== activeId) { activeId = cur; setActive(cur); }
       if (bar && this.props.floatingBar !== false) {
