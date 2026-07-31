@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=JetBrains+Mono:wght@400;500&family=Manrope:wght@200;300;400;500&display=swap" rel="stylesheet" />
+<script src="./image-slot.js"></script>
+<style>
+html { background:#0a0a0a; scroll-behavior:smooth; }
+body { margin:0; background:#0a0a0a; color:#ffffff; font-family:'Manrope',system-ui,sans-serif; font-weight:300; -webkit-font-smoothing:antialiased; overflow-x:hidden; }
+a { color:#ffffff; text-decoration:none; }
+a:hover { color:#bdbdbd; }
+input, textarea, button { font-family:inherit; }
+::selection { background:#ffffff; color:#0a0a0a; }
+@keyframes anx-marquee { from { transform:translateX(0); } to { transform:translateX(-50%); } }
+@keyframes anx-bob { 0%,100% { transform:translateY(0); opacity:.45; } 50% { transform:translateY(7px); opacity:1; } }
+@keyframes anx-scan { from { background-position:0 0; } to { background-position:0 240px; } }
+@keyframes anx-pulse { 0%,100% { opacity:.25; } 50% { opacity:.9; } }
+</style>
+</helmet>
+
+<template id="__bundler_thumbnail"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><rect width="400" height="400" fill="#0a0a0a"/><text x="200" y="228" text-anchor="middle" font-family="Archivo,Helvetica,sans-serif" font-weight="900" font-size="128" letter-spacing="-6" fill="#ffffff">ANX</text><rect x="120" y="262" width="160" height="2" fill="#f0552a"/></svg></template>
+
+<div style="position:relative; background:#0a0a0a; color:#ffffff; --accent: {{ accent }}">
+
+<!-- ============ CUSTOM CURSOR (dot + lerped ring + contextual label) ============ -->
+<sc-if value="{{ pointerFine }}" hint-placeholder-val="{{ false }}">
+<div ref="{{ setRing }}" style="position:fixed; left:0; top:0; z-index:9998; width:34px; height:34px; margin:-17px 0 0 -17px; border:1px solid rgba(255,255,255,0.55); border-radius:999px; pointer-events:none; mix-blend-mode:difference; will-change:transform; transition:background .3s ease, border-color .3s ease"></div>
+<div ref="{{ setDot }}" style="position:fixed; left:0; top:0; z-index:9999; width:5px; height:5px; margin:-2.5px 0 0 -2.5px; background:#ffffff; border-radius:999px; pointer-events:none; mix-blend-mode:difference; will-change:transform; transition:opacity .25s ease"></div>
+<div ref="{{ setLabel }}" style="position:fixed; left:0; top:0; z-index:9999; opacity:0; pointer-events:none; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.18em; color:#0a0a0a; text-transform:uppercase; white-space:nowrap; will-change:transform; transition:opacity .22s ease"></div>
+</sc-if>
+
+<!-- ============ FILM GRAIN / SCANLINE OVERLAY ============ -->
+<sc-if value="{{ showGrain }}" hint-placeholder-val="{{ true }}">
+<div style="position:fixed; inset:0; z-index:95; pointer-events:none; opacity:.5; mix-blend-mode:overlay; background-image:repeating-linear-gradient(0deg, rgba(255,255,255,0.045) 0px, rgba(255,255,255,0.045) 1px, rgba(0,0,0,0) 1px, rgba(0,0,0,0) 4px); animation:anx-scan 6s linear infinite"></div>
+</sc-if>
+
+<!-- ============ A) NAVBAR — FIXED / GLASSMORPHISM ============ -->
+<nav style="position:fixed; top:0; left:0; right:0; z-index:100; display:flex; align-items:center; justify-content:space-between; gap:24px; padding:15px clamp(18px,3.5vw,52px); background:rgba(10,10,10,0.6); backdrop-filter:blur(20px) saturate(150%); -webkit-backdrop-filter:blur(20px) saturate(150%); border-bottom:1px solid rgba(255,255,255,0.08)">
+  <a href="#top" style="display:flex; align-items:baseline; gap:11px; flex:0 0 auto">
+    <span style="font-family:'Archivo',sans-serif; font-weight:900; font-size:23px; letter-spacing:-0.05em; line-height:1">ANX</span>
+    <span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.24em; color:#888888; line-height:1">CREATIVE STUDIO</span>
+  </a>
+
+  <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+  <div style="display:flex; align-items:center; gap:clamp(20px,2.6vw,40px)">
+    <a href="#work" style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:#888888; transition:color .3s ease" style-hover="color:#ffffff">Work</a>
+    <a href="#services" style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:#888888; transition:color .3s ease" style-hover="color:#ffffff">Services</a>
+    <a href="#process" style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:#888888; transition:color .3s ease" style-hover="color:#ffffff">Process</a>
+    <a href="#about" style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.16em; text-transform:uppercase; color:#888888; transition:color .3s ease" style-hover="color:#ffffff">About</a>
+  </div>
+  </sc-if>
+
+  <div style="display:flex; align-items:center; gap:12px; flex:0 0 auto">
+    <a href="#start" data-magnetic="" style="display:inline-flex; align-items:center; gap:9px; padding:11px 18px; border:1px solid rgba(255,255,255,0.5); border-radius:999px; font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.16em; color:#ffffff; white-space:nowrap; will-change:transform; transition:background .4s cubic-bezier(.16,1,.3,1), color .4s ease, box-shadow .4s ease, border-color .4s ease" style-hover="background:var(--accent,#ffffff); color:#0a0a0a; border-color:var(--accent,#ffffff); box-shadow:0 0 38px color-mix(in oklab, var(--accent,#ffffff) 45%, transparent)">START A PROJECT <span style="font-size:12px">↗</span></a>
+    <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+    <button type="button" onClick="{{ toggleMenu }}" aria-label="Menu" style="display:flex; flex-direction:column; justify-content:center; gap:5px; width:42px; height:42px; padding:0 11px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.12); border-radius:999px; cursor:pointer">
+      <span style="display:block; height:1px; background:#ffffff"></span>
+      <span style="display:block; height:1px; background:#ffffff"></span>
+    </button>
+    </sc-if>
+  </div>
+
+  <div ref="{{ setProg }}" style="position:absolute; left:0; bottom:-1px; height:1px; width:0%; background:var(--accent,#ffffff); will-change:width"></div>
+</nav>
+
+<!-- Mobile menu overlay -->
+<sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed; inset:0; z-index:99; background:rgba(10,10,10,0.96); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); display:flex; flex-direction:column; justify-content:center; gap:6px; padding:0 clamp(18px,6vw,52px)">
+  <a href="#work" onClick="{{ closeMenu }}" style="font-family:'Archivo',sans-serif; font-weight:800; font-size:clamp(38px,12vw,64px); letter-spacing:-0.045em; text-transform:uppercase; line-height:1.06">Work</a>
+  <a href="#services" onClick="{{ closeMenu }}" style="font-family:'Archivo',sans-serif; font-weight:800; font-size:clamp(38px,12vw,64px); letter-spacing:-0.045em; text-transform:uppercase; line-height:1.06">Services</a>
+  <a href="#process" onClick="{{ closeMenu }}" style="font-family:'Archivo',sans-serif; font-weight:800; font-size:clamp(38px,12vw,64px); letter-spacing:-0.045em; text-transform:uppercase; line-height:1.06">Process</a>
+  <a href="#about" onClick="{{ closeMenu }}" style="font-family:'Archivo',sans-serif; font-weight:800; font-size:clamp(38px,12vw,64px); letter-spacing:-0.045em; text-transform:uppercase; line-height:1.06">About</a>
+  <button type="button" onClick="{{ closeMenu }}" style="position:absolute; top:18px; right:clamp(18px,6vw,52px); width:44px; height:44px; background:none; border:1px solid rgba(255,255,255,0.14); border-radius:999px; color:#ffffff; font-size:18px; cursor:pointer">×</button>
+</div>
+</sc-if>
+
+<!-- ============ B) HERO — CINEMATIC VIDEO + BLEND TYPE + POINTER PARALLAX ============ -->
+<section id="top" style="position:relative; overflow:hidden; background:radial-gradient(120% 100% at 50% 30%, #1c1c1c 0%, #0f0f0f 45%, #0a0a0a 100%)">
+  <video ref="{{ setVideo }}" src="{{ videoSrc }}" autoPlay="{{ true }}" muted="{{ true }}" loop="{{ true }}" playsInline="{{ true }}" preload="auto" disablePictureInPicture="{{ true }}" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; z-index:0; will-change:transform; background:radial-gradient(120% 100% at 50% 30%, #1c1c1c 0%, #0f0f0f 45%, #0a0a0a 100%)"></video>
+  <div style="position:absolute; inset:0; z-index:1; background:linear-gradient(180deg, rgba(10,10,10,0.82) 0%, rgba(0,0,0,0.4) 30%, rgba(0,0,0,0.4) 52%, rgba(10,10,10,0.94) 100%)"></div>
+  <div style="position:absolute; inset:0; z-index:1; background:radial-gradient(120% 80% at 50% 55%, rgba(0,0,0,0) 35%, rgba(0,0,0,0.55) 100%)"></div>
+
+  <div style="position:relative; z-index:2; min-height:100svh; display:flex; flex-direction:column; justify-content:space-between; gap:48px; padding:104px clamp(18px,3.5vw,52px) 30px">
+
+    <div style="display:flex; flex-wrap:wrap; gap:16px 40px; justify-content:space-between; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.22em; color:#888888; text-transform:uppercase">
+      <span data-reveal="">Digital Experience Design</span>
+      <span data-reveal="" data-reveal-delay="80">Guadalajara, MX — Worldwide</span>
+      <span data-reveal="" data-reveal-delay="160">Est. 2019</span>
+    </div>
+
+    <div style="display:flex; justify-content:flex-start; max-width:1000px; padding-left:clamp(18px,5vw,80px)">
+      <h1 ref="{{ setHeroTitle }}" style="margin:0; max-width:620px; text-align:left; will-change:transform; font-family:'Archivo',sans-serif; font-weight:800; font-size:clamp(34px,7.2vw,124px); line-height:0.98; letter-spacing:-0.04em; text-transform:uppercase; text-wrap:balance">
+        <span data-hero-line="" style="display:block; min-height:0.98em"><span data-hero-type="" style="color:rgba(255,255,255,0.65)">Creating</span></span>
+        <span data-hero-line="" style="display:block; min-height:0.98em"><span data-hero-type="" style="color:rgba(255,255,255,0.85)">Experiences</span></span>
+        <span data-hero-line="" style="display:block; min-height:0.98em"><span data-hero-type="" style="color:rgba(255,255,255,0.65)">That Feel </span><span data-hero-type="" style="color:#ffffff; font-weight:900; text-shadow:0 0 34px rgba(255,255,255,0.55), 0 0 70px rgba(255,255,255,0.25)">Real.</span></span>
+      </h1>
+    </div>
+
+    <div style="display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:20px 28px">
+      <p data-reveal="" data-reveal-delay="330" style="margin:0; max-width:440px; font-size:clamp(14px,1.15vw,17px); line-height:1.6; color:#888888; font-weight:300">Interactive websites for brands that refuse to look ordinary.</p>
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:64px; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.24em; color:#888888">
+        <span>SCROLL TO EXPLORE</span>
+        <span style="display:inline-block; animation:anx-bob 2.2s ease-in-out infinite; color:#ffffff">↓</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MARQUEE BAND ============ -->
+<div style="overflow:hidden; border-top:1px solid rgba(255,255,255,0.08); border-bottom:1px solid rgba(255,255,255,0.08); padding:16px 0; background:#0a0a0a">
+  <div style="display:flex; width:max-content; animation:anx-marquee 34s linear infinite; font-family:'Archivo',sans-serif; font-weight:600; font-size:14px; letter-spacing:0.18em; text-transform:uppercase; color:#888888">
+    <span style="padding-right:34px">Web Experiences</span><span style="padding-right:34px; color:#ffffff">—</span>
+    <span style="padding-right:34px">WebGL / 3D</span><span style="padding-right:34px; color:#ffffff">—</span>
+    <span style="padding-right:34px">Motion Design</span><span style="padding-right:34px; color:#ffffff">—</span>
+    <span style="padding-right:34px">E-Commerce</span><span style="padding-right:34px; color:#ffffff">—</span>
+    <span style="padding-right:34px">Art Direction</span><span style="padding-right:34px; color:#ffffff">—</span>
+    <span style="padding-right:34px">Web Experiences</span><span style="padding-right:34px; color:#ffffff">—</span>
+    <span style="padding-right:34px">WebGL / 3D</span><span style="padding-right:34px; color:#ffffff">—</span>
+    <span style="padding-right:34px">Motion Design</span><span style="padding-right:34px; color:#ffffff">—</span>
+    <span style="padding-right:34px">E-Commerce</span><span style="padding-right:34px; color:#ffffff">—</span>
+    <span style="padding-right:34px">Art Direction</span><span style="padding-right:34px; color:#ffffff">—</span>
+  </div>
+</div>
+
+<!-- ============ C) MANIFESTO — SCROLL-DRIVEN WORD REVEAL ============ -->
+<section id="about" style="scroll-margin-top:84px; padding:clamp(90px,13vw,190px) clamp(18px,3.5vw,52px)">
+  <div style="max-width:1500px; margin:0 auto">
+    <div style="display:flex; align-items:center; justify-content:flex-start; gap:12px; margin-bottom:clamp(40px,6vw,80px); font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.24em; color:#888888; text-transform:uppercase">
+      <span style="width:6px; height:6px; background:var(--accent,#ffffff); border-radius:1px"></span>
+      <span>(01) The Idea</span>
+    </div>
+    <p data-words="" style="margin:0; max-width:1400px; text-align:center; font-family:'Archivo',sans-serif; font-weight:700; font-size:clamp(27px,4.4vw,74px); line-height:1.06; letter-spacing:-0.035em; text-transform:uppercase; color:#5f5f5f; text-wrap:pretty"><span style="color:#ffffff">A website isn't just a website.</span> It's the <span style="color:#ffffff">first impression</span> of your brand. The place where <span style="color:#ffffff">attention becomes interest</span>. And where interest <span style="color:#ffffff">turns into action.</span></p>
+  </div>
+</section>
+
+<!-- ============ SERVICES / CAPABILITIES — HOVER EXPANSION ============ -->
+<section id="services" style="scroll-margin-top:84px; padding:0 clamp(18px,3.5vw,52px) clamp(80px,10vw,150px)">
+  <div style="max-width:1500px; margin:0 auto">
+    <div style="display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:16px; margin-bottom:clamp(28px,4vw,52px); font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.24em; color:#888888; text-transform:uppercase">
+      <div style="display:flex; align-items:center; gap:12px">
+        <span style="width:6px; height:6px; background:var(--accent,#ffffff); border-radius:1px"></span>
+        <span>(02) Capabilities</span>
+      </div>
+      <span>Four ways we build</span>
+    </div>
+
+    <div data-svc-list="" style="border-top:1px solid rgba(255,255,255,0.08)">
+
+      <a href="#start" data-svc="" data-reveal="" style="position:relative; display:block; padding:clamp(20px,2.6vw,34px) clamp(4px,1.2vw,18px); border-bottom:1px solid rgba(255,255,255,0.08); overflow:hidden; transition:opacity .5s ease, background .5s cubic-bezier(.16,1,.3,1), padding-left .5s cubic-bezier(.16,1,.3,1)">
+        <span data-svc-glow="" style="position:absolute; left:0; top:0; bottom:0; width:0%; pointer-events:none; background:linear-gradient(90deg, color-mix(in oklab, var(--accent,#ffffff) 12%, transparent) 0%, rgba(255,255,255,0) 100%); transition:width .8s cubic-bezier(.16,1,.3,1)"></span>
+        <span style="position:relative; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:14px 28px">
+          <span style="display:flex; align-items:baseline; gap:clamp(14px,2vw,32px)">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#888888">01</span>
+            <span style="font-family:'Archivo',sans-serif; font-weight:800; font-size:clamp(24px,3.3vw,54px); letter-spacing:-0.04em; text-transform:uppercase; line-height:1">Web Experiences</span>
+          </span>
+          <span style="display:flex; align-items:center; gap:18px; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.14em; color:#888888; text-transform:uppercase">
+            <span>Design + Build</span><span style="color:#ffffff; font-size:14px">↗</span>
+          </span>
+        </span>
+        <span data-svc-detail="" style="position:relative; display:block; max-height:0; opacity:0; overflow:hidden; max-width:640px; font-size:14px; line-height:1.7; color:#888888; transition:max-height .6s cubic-bezier(.16,1,.3,1), opacity .5s ease, margin-top .6s cubic-bezier(.16,1,.3,1)">Narrative scroll, custom motion system and a build that stays at 60fps on every device.</span>
+      </a>
+
+      <a href="#start" data-svc="" data-reveal="" data-reveal-delay="70" style="position:relative; display:block; padding:clamp(20px,2.6vw,34px) clamp(4px,1.2vw,18px); border-bottom:1px solid rgba(255,255,255,0.08); overflow:hidden; transition:opacity .5s ease, background .5s cubic-bezier(.16,1,.3,1), padding-left .5s cubic-bezier(.16,1,.3,1)">
+        <span data-svc-glow="" style="position:absolute; left:0; top:0; bottom:0; width:0%; pointer-events:none; background:linear-gradient(90deg, color-mix(in oklab, var(--accent,#ffffff) 12%, transparent) 0%, rgba(255,255,255,0) 100%); transition:width .8s cubic-bezier(.16,1,.3,1)"></span>
+        <span style="position:relative; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:14px 28px">
+          <span style="display:flex; align-items:baseline; gap:clamp(14px,2vw,32px)">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#888888">02</span>
+            <span style="font-family:'Archivo',sans-serif; font-weight:800; font-size:clamp(24px,3.3vw,54px); letter-spacing:-0.04em; text-transform:uppercase; line-height:1">Interactive 3D</span>
+          </span>
+          <span style="display:flex; align-items:center; gap:18px; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.14em; color:#888888; text-transform:uppercase">
+            <span>WebGL + Shaders</span><span style="color:#ffffff; font-size:14px">↗</span>
+          </span>
+        </span>
+        <span data-svc-detail="" style="position:relative; display:block; max-height:0; opacity:0; overflow:hidden; max-width:640px; font-size:14px; line-height:1.7; color:#888888; transition:max-height .6s cubic-bezier(.16,1,.3,1), opacity .5s ease, margin-top .6s cubic-bezier(.16,1,.3,1)">Real-time scenes, product configurators and shader work that still loads under two seconds.</span>
+      </a>
+
+      <a href="#start" data-svc="" data-reveal="" data-reveal-delay="140" style="position:relative; display:block; padding:clamp(20px,2.6vw,34px) clamp(4px,1.2vw,18px); border-bottom:1px solid rgba(255,255,255,0.08); overflow:hidden; transition:opacity .5s ease, background .5s cubic-bezier(.16,1,.3,1), padding-left .5s cubic-bezier(.16,1,.3,1)">
+        <span data-svc-glow="" style="position:absolute; left:0; top:0; bottom:0; width:0%; pointer-events:none; background:linear-gradient(90deg, color-mix(in oklab, var(--accent,#ffffff) 12%, transparent) 0%, rgba(255,255,255,0) 100%); transition:width .8s cubic-bezier(.16,1,.3,1)"></span>
+        <span style="position:relative; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:14px 28px">
+          <span style="display:flex; align-items:baseline; gap:clamp(14px,2vw,32px)">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#888888">03</span>
+            <span style="font-family:'Archivo',sans-serif; font-weight:800; font-size:clamp(24px,3.3vw,54px); letter-spacing:-0.04em; text-transform:uppercase; line-height:1">E-Commerce</span>
+          </span>
+          <span style="display:flex; align-items:center; gap:18px; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.14em; color:#888888; text-transform:uppercase">
+            <span>Shopify + Headless</span><span style="color:#ffffff; font-size:14px">↗</span>
+          </span>
+        </span>
+        <span data-svc-detail="" style="position:relative; display:block; max-height:0; opacity:0; overflow:hidden; max-width:640px; font-size:14px; line-height:1.7; color:#888888; transition:max-height .6s cubic-bezier(.16,1,.3,1), opacity .5s ease, margin-top .6s cubic-bezier(.16,1,.3,1)">Storefronts engineered around conversion: fast PDPs, frictionless checkout, measurable lift.</span>
+      </a>
+
+      <a href="#start" data-svc="" data-reveal="" data-reveal-delay="210" style="position:relative; display:block; padding:clamp(20px,2.6vw,34px) clamp(4px,1.2vw,18px); border-bottom:1px solid rgba(255,255,255,0.08); overflow:hidden; transition:opacity .5s ease, background .5s cubic-bezier(.16,1,.3,1), padding-left .5s cubic-bezier(.16,1,.3,1)">
+        <span data-svc-glow="" style="position:absolute; left:0; top:0; bottom:0; width:0%; pointer-events:none; background:linear-gradient(90deg, color-mix(in oklab, var(--accent,#ffffff) 12%, transparent) 0%, rgba(255,255,255,0) 100%); transition:width .8s cubic-bezier(.16,1,.3,1)"></span>
+        <span style="position:relative; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:14px 28px">
+          <span style="display:flex; align-items:baseline; gap:clamp(14px,2vw,32px)">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:11px; color:#888888">04</span>
+            <span style="font-family:'Archivo',sans-serif; font-weight:800; font-size:clamp(24px,3.3vw,54px); letter-spacing:-0.04em; text-transform:uppercase; line-height:1">Motion & Art Direction</span>
+          </span>
+          <span style="display:flex; align-items:center; gap:18px; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.14em; color:#888888; text-transform:uppercase">
+            <span>Brand in Motion</span><span style="color:#ffffff; font-size:14px">↗</span>
+          </span>
+        </span>
+        <span data-svc-detail="" style="position:relative; display:block; max-height:0; opacity:0; overflow:hidden; max-width:640px; font-size:14px; line-height:1.7; color:#888888; transition:max-height .6s cubic-bezier(.16,1,.3,1), opacity .5s ease, margin-top .6s cubic-bezier(.16,1,.3,1)">Art direction, motion language and asset systems your team can keep running after launch.</span>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ D) SELECTED EXPERIENCES — 3D TILT CARDS ============ -->
+<section id="work" style="scroll-margin-top:84px; padding:0 clamp(18px,3.5vw,52px) clamp(80px,10vw,150px)">
+  <div style="max-width:1500px; margin:0 auto">
+    <div style="display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:16px; margin-bottom:clamp(28px,4vw,52px); font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.24em; color:#888888; text-transform:uppercase">
+      <div style="display:flex; align-items:center; gap:12px">
+        <span style="width:6px; height:6px; background:var(--accent,#ffffff); border-radius:1px"></span>
+        <span>(03) Selected Experiences</span>
+      </div>
+      <span>2024 — 2026</span>
+    </div>
+
+    <div>
+
+      <!-- Featured Project — TALLER -->
+      <div data-reveal="" style="perspective:1400px">
+        <a href="https://alex-coff.vercel.app/" data-tilt="" data-cursor-label="View Case" style="display:grid; grid-template-columns: {{ workGridCols }}; gap:0; border:1px solid rgba(255,255,255,0.08); background:rgba(255,255,255,0.015); transform-style:preserve-3d; will-change:transform; overflow:hidden; transition:border-color .5s ease, background .5s ease" style-hover="border-color:rgba(255,255,255,0.24); background:rgba(255,255,255,0.04)">
+          <div style="position:relative; aspect-ratio:16/12; overflow:hidden; background:#101010">
+            <div data-zoom="" style="position:absolute; inset:0; transition:transform 1.4s cubic-bezier(.16,1,.3,1); will-change:transform">
+              <video src="./videofuncional.mp4" autoPlay="{{ true }}" muted="{{ true }}" loop="{{ true }}" playsInline="{{ true }}" preload="auto" disablePictureInPicture="{{ true }}" style="width:100%; height:100%; object-fit:cover; object-position:center; display:block; filter:saturate(1.05) contrast(1.04)"></video>
+            </div>
+            <div data-glare="" style="position:absolute; left:0; top:0; width:380px; height:380px; opacity:0; pointer-events:none; background:radial-gradient(circle, color-mix(in oklab, var(--accent,#ffffff) 22%, transparent) 0%, rgba(255,255,255,0) 65%); will-change:transform; transition:opacity .4s ease"></div>
+            <div style="position:absolute; inset:0; pointer-events:none; background:linear-gradient(180deg, rgba(10,10,10,0) 55%, rgba(10,10,10,0.75) 100%)"></div>
+            <div data-viewcase="" style="position:absolute; left:20px; bottom:20px; display:flex; align-items:center; gap:10px; opacity:0; transform:translateY(10px); pointer-events:none; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.18em; color:#ffffff; text-transform:uppercase; transition:opacity .5s ease, transform .6s cubic-bezier(.16,1,.3,1)">
+              <span>View Case</span><span>↗</span>
+            </div>
+            <span style="position:absolute; right:18px; top:16px; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.18em; color:rgba(255,255,255,0.7)">01</span>
+          </div>
+          <div style="display:flex; flex-direction:column; justify-content:center; gap:20px; padding:clamp(26px,3.2vw,54px)">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.2em; color:var(--accent,#ffffff); text-transform:uppercase">Featured Project</span>
+            <span style="font-family:'Archivo',sans-serif; font-weight:800; font-size:clamp(24px,2.6vw,44px); letter-spacing:-0.04em; text-transform:uppercase; line-height:1.05">Taller — Specialty Coffee &amp; Tech</span>
+            <p style="margin:0; max-width:420px; font-size:14px; line-height:1.7; color:#888888">Reparación de cafeteras espresso en Guadalajara | Reparación Cafeteras Total</p>
+            <div style="display:flex; flex-wrap:wrap; gap:7px">
+              <span style="padding:5px 11px; border:1px solid rgba(255,255,255,0.12); border-radius:999px; font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:0.14em; color:#888888; text-transform:uppercase">Storytelling</span>
+              <span style="padding:5px 11px; border:1px solid rgba(255,255,255,0.12); border-radius:999px; font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:0.14em; color:#888888; text-transform:uppercase">E-Commerce</span>
+              <span style="padding:5px 11px; border:1px solid rgba(255,255,255,0.12); border-radius:999px; font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:0.14em; color:#888888; text-transform:uppercase">Technical Service</span>
+            </div>
+          </div>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROCESS ============ -->
+<section id="process" style="scroll-margin-top:84px; padding:0 clamp(18px,3.5vw,52px) clamp(80px,10vw,150px)">
+  <div style="max-width:1500px; margin:0 auto">
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:clamp(28px,4vw,52px); font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.24em; color:#888888; text-transform:uppercase">
+      <span style="width:6px; height:6px; background:var(--accent,#ffffff); border-radius:1px"></span>
+      <span>(04) Process</span>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:1px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.08)">
+      <div data-reveal="" style="display:flex; flex-direction:column; gap:14px; padding:clamp(22px,2.4vw,34px); background:#0a0a0a; transition:background .5s ease" style-hover="background:#111111">
+        <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.2em; color:var(--accent,#ffffff)">01</span>
+        <span style="font-family:'Archivo',sans-serif; font-weight:800; font-size:19px; letter-spacing:-0.02em; text-transform:uppercase">Discovery</span>
+        <span style="font-size:13.5px; line-height:1.65; color:#888888">We map the brand, the audience and the one business goal that matters.</span>
+      </div>
+      <div data-reveal="" data-reveal-delay="70" style="display:flex; flex-direction:column; gap:14px; padding:clamp(22px,2.4vw,34px); background:#0a0a0a; transition:background .5s ease" style-hover="background:#111111">
+        <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.2em; color:var(--accent,#ffffff)">02</span>
+        <span style="font-family:'Archivo',sans-serif; font-weight:800; font-size:19px; letter-spacing:-0.02em; text-transform:uppercase">Concept</span>
+        <span style="font-size:13.5px; line-height:1.65; color:#888888">Art direction, motion language and the interaction principles of the site.</span>
+      </div>
+      <div data-reveal="" data-reveal-delay="140" style="display:flex; flex-direction:column; gap:14px; padding:clamp(22px,2.4vw,34px); background:#0a0a0a; transition:background .5s ease" style-hover="background:#111111">
+        <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.2em; color:var(--accent,#ffffff)">03</span>
+        <span style="font-family:'Archivo',sans-serif; font-weight:800; font-size:19px; letter-spacing:-0.02em; text-transform:uppercase">Build</span>
+        <span style="font-size:13.5px; line-height:1.65; color:#888888">Design and code in one loop — no handoff gaps, no lost details.</span>
+      </div>
+      <div data-reveal="" data-reveal-delay="210" style="display:flex; flex-direction:column; gap:14px; padding:clamp(22px,2.4vw,34px); background:#0a0a0a; transition:background .5s ease" style-hover="background:#111111">
+        <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.2em; color:var(--accent,#ffffff)">04</span>
+        <span style="font-family:'Archivo',sans-serif; font-weight:800; font-size:19px; letter-spacing:-0.02em; text-transform:uppercase">Launch</span>
+        <span style="font-size:13.5px; line-height:1.65; color:#888888">Performance, analytics and a 30-day iteration window after go-live.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ E) CONVERSION HUB — SMART QUOTE FORM ============ -->
+<section id="start" style="scroll-margin-top:84px; position:relative; padding:0 clamp(18px,3.5vw,52px) clamp(90px,11vw,160px)">
+  <div style="position:absolute; left:50%; top:0; width:min(900px,90vw); height:420px; transform:translateX(-50%); pointer-events:none; background:radial-gradient(60% 60% at 50% 0%, color-mix(in oklab, var(--accent,#ffffff) 12%, transparent) 0%, rgba(10,10,10,0) 70%)"></div>
+
+  <div style="position:relative; max-width:1180px; margin:0 auto; border:1px solid rgba(255,255,255,0.08); background:linear-gradient(180deg, rgba(255,255,255,0.035) 0%, rgba(255,255,255,0.01) 100%); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px)">
+
+    <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:14px; padding:clamp(22px,2.6vw,34px) clamp(20px,3vw,44px); border-bottom:1px solid rgba(255,255,255,0.08); font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.24em; color:#888888; text-transform:uppercase">
+      <div style="display:flex; align-items:center; gap:12px">
+        <span style="width:6px; height:6px; background:var(--accent,#ffffff); border-radius:1px; animation:anx-pulse 2.4s ease-in-out infinite"></span>
+        <span>(05) Start a Project</span>
+      </div>
+      <span>Step {{ stepNum }} / 03</span>
+    </div>
+    <div style="height:1px; background:rgba(255,255,255,0.06)">
+      <div style="height:1px; background:var(--accent,#ffffff); width: {{ stepPct }}; transition:width .6s cubic-bezier(.16,1,.3,1)"></div>
+    </div>
+
+    <div style="padding:clamp(30px,4.4vw,64px) clamp(20px,3vw,44px)">
+
+      <!-- STEP 1 — SERVICE -->
+      <sc-if value="{{ stepService }}" hint-placeholder-val="{{ true }}">
+      <div style="display:flex; flex-direction:column; gap:clamp(26px,3.4vw,44px)">
+        <h2 style="margin:0; max-width:900px; font-family:'Archivo',sans-serif; font-weight:800; font-size:clamp(28px,4.2vw,60px); line-height:1.02; letter-spacing:-0.04em; text-transform:uppercase">What do you need?</h2>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:clamp(12px,1.4vw,18px)">
+          <button type="button" onClick="{{ pickWeb }}" style="position:relative; display:flex; flex-direction:column; align-items:flex-start; gap:12px; padding:clamp(20px,2.2vw,30px); text-align:left; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.1); color:#ffffff; cursor:pointer; transition:background .18s ease, border-color .18s ease, box-shadow .18s ease, transform .5s cubic-bezier(.16,1,.3,1)" style-hover="background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.3); transform:translateY(-3px)">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.2em; color:#888888">A</span>
+            <span style="font-family:'Archivo',sans-serif; font-weight:800; font-size:clamp(18px,1.6vw,24px); letter-spacing:-0.03em; text-transform:uppercase; line-height:1.1">Web Experiences</span>
+            <span style="font-size:13px; line-height:1.6; color:#888888">Full immersive site, motion-led, built to be remembered.</span>
+            <sc-if value="{{ selWeb }}" hint-placeholder-val="{{ false }}">
+            <span style="position:absolute; inset:-1px; border:1px solid var(--accent,#ffffff); background:color-mix(in oklab, var(--accent,#ffffff) 9%, transparent); box-shadow:0 0 44px color-mix(in oklab, var(--accent,#ffffff) 30%, transparent); pointer-events:none"></span>
+            <span style="position:absolute; top:12px; right:14px; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--accent,#ffffff); pointer-events:none">●</span>
+            </sc-if>
+          </button>
+          <button type="button" onClick="{{ pickLanding }}" style="position:relative; display:flex; flex-direction:column; align-items:flex-start; gap:12px; padding:clamp(20px,2.2vw,30px); text-align:left; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.1); color:#ffffff; cursor:pointer; transition:background .18s ease, border-color .18s ease, box-shadow .18s ease, transform .5s cubic-bezier(.16,1,.3,1)" style-hover="background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.3); transform:translateY(-3px)">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.2em; color:#888888">B</span>
+            <span style="font-family:'Archivo',sans-serif; font-weight:800; font-size:clamp(18px,1.6vw,24px); letter-spacing:-0.03em; text-transform:uppercase; line-height:1.1">Landing Page</span>
+            <span style="font-size:13px; line-height:1.6; color:#888888">One page, one goal: turn attention into qualified leads.</span>
+            <sc-if value="{{ selLanding }}" hint-placeholder-val="{{ false }}">
+            <span style="position:absolute; inset:-1px; border:1px solid var(--accent,#ffffff); background:color-mix(in oklab, var(--accent,#ffffff) 9%, transparent); box-shadow:0 0 44px color-mix(in oklab, var(--accent,#ffffff) 30%, transparent); pointer-events:none"></span>
+            <span style="position:absolute; top:12px; right:14px; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--accent,#ffffff); pointer-events:none">●</span>
+            </sc-if>
+          </button>
+          <button type="button" onClick="{{ pick3d }}" style="position:relative; display:flex; flex-direction:column; align-items:flex-start; gap:12px; padding:clamp(20px,2.2vw,30px); text-align:left; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.1); color:#ffffff; cursor:pointer; transition:background .18s ease, border-color .18s ease, box-shadow .18s ease, transform .5s cubic-bezier(.16,1,.3,1)" style-hover="background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.3); transform:translateY(-3px)">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.2em; color:#888888">C</span>
+            <span style="font-family:'Archivo',sans-serif; font-weight:800; font-size:clamp(18px,1.6vw,24px); letter-spacing:-0.03em; text-transform:uppercase; line-height:1.1">Interactive 3D</span>
+            <span style="font-size:13px; line-height:1.6; color:#888888">WebGL scenes, product configurators and real-time visuals.</span>
+            <sc-if value="{{ sel3d }}" hint-placeholder-val="{{ false }}">
+            <span style="position:absolute; inset:-1px; border:1px solid var(--accent,#ffffff); background:color-mix(in oklab, var(--accent,#ffffff) 9%, transparent); box-shadow:0 0 44px color-mix(in oklab, var(--accent,#ffffff) 30%, transparent); pointer-events:none"></span>
+            <span style="position:absolute; top:12px; right:14px; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--accent,#ffffff); pointer-events:none">●</span>
+            </sc-if>
+          </button>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- STEP 2 — BUDGET -->
+      <sc-if value="{{ stepBudget }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex; flex-direction:column; gap:clamp(26px,3.4vw,44px)">
+        <div style="display:flex; flex-direction:column; gap:14px">
+          <h2 style="margin:0; max-width:900px; font-family:'Archivo',sans-serif; font-weight:800; font-size:clamp(28px,4.2vw,60px); line-height:1.02; letter-spacing:-0.04em; text-transform:uppercase">What's your estimated budget?</h2>
+          <span style="font-size:13.5px; color:#888888">Ranges in MXN. It only sets the scope — we scale the idea to fit.</span>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:clamp(12px,1.4vw,18px)">
+          <button type="button" onClick="{{ pickB1 }}" style="position:relative; display:flex; flex-direction:column; align-items:flex-start; gap:10px; padding:clamp(20px,2.2vw,30px); text-align:left; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.1); color:#ffffff; cursor:pointer; transition:background .18s ease, border-color .18s ease, box-shadow .18s ease, transform .5s cubic-bezier(.16,1,.3,1)" style-hover="background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.3); transform:translateY(-3px)">
+            <span style="font-family:'Archivo',sans-serif; font-weight:800; font-size:clamp(20px,1.9vw,28px); letter-spacing:-0.03em">$25k — $45k</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.18em; color:#888888; text-transform:uppercase">Focused Scope</span>
+            <sc-if value="{{ selB1 }}" hint-placeholder-val="{{ false }}">
+            <span style="position:absolute; inset:-1px; border:1px solid var(--accent,#ffffff); background:color-mix(in oklab, var(--accent,#ffffff) 9%, transparent); box-shadow:0 0 44px color-mix(in oklab, var(--accent,#ffffff) 30%, transparent); pointer-events:none"></span>
+            <span style="position:absolute; top:12px; right:14px; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--accent,#ffffff); pointer-events:none">●</span>
+            </sc-if>
+          </button>
+          <button type="button" onClick="{{ pickB2 }}" style="position:relative; display:flex; flex-direction:column; align-items:flex-start; gap:10px; padding:clamp(20px,2.2vw,30px); text-align:left; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.1); color:#ffffff; cursor:pointer; transition:background .18s ease, border-color .18s ease, box-shadow .18s ease, transform .5s cubic-bezier(.16,1,.3,1)" style-hover="background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.3); transform:translateY(-3px)">
+            <span style="font-family:'Archivo',sans-serif; font-weight:800; font-size:clamp(20px,1.9vw,28px); letter-spacing:-0.03em">$45k — $70k</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.18em; color:#888888; text-transform:uppercase">Full Experience</span>
+            <sc-if value="{{ selB2 }}" hint-placeholder-val="{{ false }}">
+            <span style="position:absolute; inset:-1px; border:1px solid var(--accent,#ffffff); background:color-mix(in oklab, var(--accent,#ffffff) 9%, transparent); box-shadow:0 0 44px color-mix(in oklab, var(--accent,#ffffff) 30%, transparent); pointer-events:none"></span>
+            <span style="position:absolute; top:12px; right:14px; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--accent,#ffffff); pointer-events:none">●</span>
+            </sc-if>
+          </button>
+          <button type="button" onClick="{{ pickB3 }}" style="position:relative; display:flex; flex-direction:column; align-items:flex-start; gap:10px; padding:clamp(20px,2.2vw,30px); text-align:left; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.1); color:#ffffff; cursor:pointer; transition:background .18s ease, border-color .18s ease, box-shadow .18s ease, transform .5s cubic-bezier(.16,1,.3,1)" style-hover="background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.3); transform:translateY(-3px)">
+            <span style="font-family:'Archivo',sans-serif; font-weight:800; font-size:clamp(20px,1.9vw,28px); letter-spacing:-0.03em">$70k +</span>
+            <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.18em; color:#888888; text-transform:uppercase">Flagship / 3D</span>
+            <sc-if value="{{ selB3 }}" hint-placeholder-val="{{ false }}">
+            <span style="position:absolute; inset:-1px; border:1px solid var(--accent,#ffffff); background:color-mix(in oklab, var(--accent,#ffffff) 9%, transparent); box-shadow:0 0 44px color-mix(in oklab, var(--accent,#ffffff) 30%, transparent); pointer-events:none"></span>
+            <span style="position:absolute; top:12px; right:14px; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--accent,#ffffff); pointer-events:none">●</span>
+            </sc-if>
+          </button>
+        </div>
+        <button type="button" onClick="{{ back }}" style="align-self:flex-start; padding:0; background:none; border:none; color:#888888; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; cursor:pointer; transition:color .3s ease" style-hover="color:#ffffff">← Back</button>
+      </div>
+      </sc-if>
+
+      <!-- STEP 3 — DETAILS -->
+      <sc-if value="{{ stepDetails }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:clamp(28px,3.6vw,56px)">
+        <div style="display:flex; flex-direction:column; gap:22px">
+          <h2 style="margin:0; font-family:'Archivo',sans-serif; font-weight:800; font-size:clamp(28px,3.6vw,52px); line-height:1.02; letter-spacing:-0.04em; text-transform:uppercase">Tell us about it.</h2>
+          <div style="display:flex; flex-wrap:wrap; gap:8px">
+            <span style="padding:7px 13px; border:1px solid rgba(255,255,255,0.18); border-radius:999px; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.14em; color:#ffffff; text-transform:uppercase">{{ serviceLabel }}</span>
+            <span style="padding:7px 13px; border:1px solid rgba(255,255,255,0.18); border-radius:999px; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.14em; color:#ffffff; text-transform:uppercase">{{ budgetLabel }}</span>
+          </div>
+          <p style="margin:0; max-width:380px; font-size:13.5px; line-height:1.7; color:#888888">We answer every serious brief within 24 hours with a scope, a timeline and a fixed price.</p>
+          <button type="button" onClick="{{ back }}" style="align-self:flex-start; padding:0; background:none; border:none; color:#888888; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; cursor:pointer; transition:color .3s ease" style-hover="color:#ffffff">← Back</button>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:18px">
+          <label style="display:flex; flex-direction:column; gap:9px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:0.22em; color:#888888; text-transform:uppercase">Name</span>
+            <input type="text" value="{{ name }}" onChange="{{ onName }}" placeholder="Your full name" style="width:100%; box-sizing:border-box; padding:14px 0; background:none; border:none; border-bottom:1px solid rgba(255,255,255,0.14); color:#ffffff; font-size:16px; font-weight:300; outline:none; transition:border-color .35s ease" style-focus="border-bottom-color:var(--accent,#ffffff)" />
+          </label>
+          <label style="display:flex; flex-direction:column; gap:9px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:0.22em; color:#888888; text-transform:uppercase">Email</span>
+            <input type="email" value="{{ email }}" onChange="{{ onEmail }}" placeholder="you@company.com" style="width:100%; box-sizing:border-box; padding:14px 0; background:none; border:none; border-bottom:1px solid rgba(255,255,255,0.14); color:#ffffff; font-size:16px; font-weight:300; outline:none; transition:border-color .35s ease" style-focus="border-bottom-color:var(--accent,#ffffff)" />
+          </label>
+          <label style="display:flex; flex-direction:column; gap:9px">
+            <span style="font-family:'JetBrains Mono',monospace; font-size:9.5px; letter-spacing:0.22em; color:#888888; text-transform:uppercase">Project Brief</span>
+            <textarea rows="3" value="{{ brief }}" onChange="{{ onBrief }}" placeholder="What are we building, and by when?" style="width:100%; box-sizing:border-box; padding:14px 0; background:none; border:none; border-bottom:1px solid rgba(255,255,255,0.14); color:#ffffff; font-size:16px; font-weight:300; line-height:1.6; resize:vertical; outline:none; transition:border-color .35s ease" style-focus="border-bottom-color:var(--accent,#ffffff)"></textarea>
+          </label>
+          <sc-if value="{{ hasError }}" hint-placeholder-val="{{ false }}">
+          <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.14em; color:#ff6b4a; text-transform:uppercase">{{ errorMsg }}</span>
+          </sc-if>
+          <button type="button" onClick="{{ submit }}" data-magnetic="" style="display:inline-flex; align-items:center; justify-content:space-between; gap:14px; width:100%; box-sizing:border-box; margin-top:6px; padding:20px 26px; background:#ffffff; border:1px solid #ffffff; color:#0a0a0a; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.2em; text-transform:uppercase; cursor:pointer; will-change:transform; transition:box-shadow .45s ease, background .45s ease" style-hover="background:var(--accent,#ffffff); box-shadow:0 0 46px color-mix(in oklab, var(--accent,#ffffff) 42%, transparent)">
+            <span>Request a Quote</span><span style="font-size:14px">→</span>
+          </button>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- STEP 3 — CONFIRMATION -->
+      <sc-if value="{{ stepDone }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex; flex-direction:column; align-items:flex-start; gap:22px; padding:clamp(10px,3vw,40px) 0">
+        <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.24em; color:var(--accent,#ffffff); text-transform:uppercase">Brief received</span>
+        <h2 style="margin:0; max-width:900px; font-family:'Archivo',sans-serif; font-weight:800; font-size:clamp(30px,4.4vw,64px); line-height:1.02; letter-spacing:-0.04em; text-transform:uppercase">Thanks, {{ firstName }} We'll be in touch within 24 hours.</h2>
+        <p style="margin:0; max-width:520px; font-size:14px; line-height:1.7; color:#888888">Your request is queued: {{ serviceLabel }} · {{ budgetLabel }}. Want to move faster? <a href="{{ waHref }}" target="_blank" rel="noopener noreferrer" style="color:var(--accent,#ffffff); text-decoration:underline; transition:color .3s ease" style-hover="color:#ffffff">chat on WhatsApp</a>.</p>
+        <button type="button" onClick="{{ reset }}" style="padding:0; background:none; border:none; color:#888888; font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.2em; text-transform:uppercase; cursor:pointer; transition:color .3s ease" style-hover="color:#ffffff">← Send another brief</button>
+      </div>
+      </sc-if>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer style="border-top:1px solid rgba(255,255,255,0.08); padding:clamp(30px,4vw,54px) clamp(18px,3.5vw,52px)">
+  <div style="display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:22px 40px; max-width:1500px; margin:0 auto">
+    <div style="display:flex; align-items:baseline; gap:11px">
+      <span style="font-family:'Archivo',sans-serif; font-weight:900; font-size:20px; letter-spacing:-0.05em">ANX</span>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.24em; color:#888888">CREATIVE STUDIO</span>
+    </div>
+    <span style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.16em; color:#5f5f5f">© 2026 ANX</span>
+  </div>
+</footer>
+
+<!-- ============ F) FLOATING WHATSAPP ============ -->
+<a href="{{ waHref }}" target="_blank" rel="noopener noreferrer" data-magnetic="" style="position:fixed; right:clamp(16px,2vw,28px); bottom:clamp(16px,2vw,28px); z-index:120; display:inline-flex; align-items:center; gap:11px; padding:12px 18px 12px 14px; background:rgba(20,20,20,0.72); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,0.14); border-radius:999px; color:#ffffff; font-family:'JetBrains Mono',monospace; font-size:10.5px; letter-spacing:0.16em; text-transform:uppercase; box-shadow:0 18px 50px rgba(0,0,0,0.5); will-change:transform; transition:background .4s ease, color .4s ease, border-color .4s ease" style-hover="background:#ffffff; color:#0a0a0a; border-color:#ffffff">
+  <span style="display:flex; align-items:center; justify-content:center; width:24px; height:24px; border-radius:999px; background:var(--accent,#ffffff); color:#0a0a0a; font-size:12px; line-height:1">✆</span>
+  <span>+52 33 1159 9014</span>
+</a>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;accent&quot;: { &quot;editor&quot;: &quot;color&quot;, &quot;default&quot;: &quot;#ffffff&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;options&quot;: [&quot;#ffffff&quot;, &quot;#f0552a&quot;, &quot;#c8ff2e&quot;, &quot;#4d7cfe&quot;], &quot;section&quot;: &quot;Brand&quot; },
+  &quot;heroVideoUrl&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260411_104032_69319010-2458-492b-b04d-b40a5dfa4482.mp4&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Hero&quot; },
+  &quot;customCursor&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Interaction&quot; },
+  &quot;grain&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Brand&quot; },
+  &quot;whatsappNumber&quot;: { &quot;editor&quot;: &quot;text&quot;, &quot;default&quot;: &quot;+52 33 1159 9014&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Contact&quot; }
+}">
+const DEFAULT_VIDEO = "https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260411_104032_69319010-2458-492b-b04d-b40a5dfa4482.mp4";
+const SERVICES = { web: "Web Experiences", landing: "Landing Page", threed: "Interactive 3D" };
+const BUDGETS = { b1: "$25k – $45k MXN", b2: "$45k – $70k MXN", b3: "$70k+ MXN" };
+const EASE = "cubic-bezier(.16,1,.3,1)";
+const lerp = (a, b, t) => a + (b - a) * t;
+
+class Component extends DCLogic {
+  state = {
+    vw: typeof window !== "undefined" ? window.innerWidth : 1440,
+    pointerFine: false, menuOpen: false,
+    step: 0, service: null, budget: null,
+    name: "", email: "", brief: "", error: ""
+  };
+
+  /* ============ lifecycle ============ */
+  componentDidMount() {
+    const w = window;
+    this.reduced = w.matchMedia && w.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    this.m = { x: w.innerWidth / 2, y: w.innerHeight / 2 };   // raw pointer
+    this.c = { x: this.m.x, y: this.m.y, dx: this.m.x, dy: this.m.y, s: 1, ts: 1 };  // cursor state
+    this.h = { x: 0, y: 0, tx: 0, ty: 0 };                     // hero parallax
+    this.scrollY = -1;
+    this.seen = new WeakSet();
+    this.nodes = [];
+
+    this._onMove = (e) => { this.m.x = e.clientX; this.m.y = e.clientY; };
+    this._onResize = () => this.setState({ vw: w.innerWidth });
+    this._onOver = (e) => {
+      const t = e.target && e.target.closest ? e.target.closest("a,button,input,textarea,[data-cursor]") : null;
+      if (t === this._hot) return;
+      this._hot = t;
+      this.setCursorMode(t);
+    };
+    w.addEventListener("pointermove", this._onMove, { passive: true });
+    w.addEventListener("resize", this._onResize, { passive: true });
+    document.addEventListener("pointerover", this._onOver, { passive: true });
+
+    const fine = !!(w.matchMedia && w.matchMedia("(pointer: fine)").matches) && !this.reduced && this.props.customCursor !== false;
+    if (fine) {
+      this.setState({ pointerFine: true });
+      document.documentElement.style.cursor = "none";
+    }
+
+    this.enhance();
+    this.loop();
+    this.heroReveal();
+    this._safety = setTimeout(() => {   // never let content stay hidden
+      const all = document.querySelectorAll("[data-reveal]");
+      const hidden = Array.prototype.filter.call(all, (el) => !el.dataset.anxShown);
+      if (hidden.length === all.length) this.revealAll();
+    }, 1200);
+  }
+
+  componentDidUpdate() { this.enhance(); }
+
+  componentWillUnmount() {
+    window.removeEventListener("pointermove", this._onMove);
+    window.removeEventListener("resize", this._onResize);
+    document.removeEventListener("pointerover", this._onOver);
+    document.documentElement.style.cursor = "";
+    if (this._raf) cancelAnimationFrame(this._raf);
+    if (this._safety) clearTimeout(this._safety);
+  }
+
+  /* ============ single rAF loop: cursor + hero parallax + scroll work ============ */
+  loop = () => {
+    this._raf = requestAnimationFrame(this.loop);
+    const w = window;
+
+    if (this.ringEl) {
+      const c = this.c;
+      c.x = lerp(c.x, this.m.x, 0.17); c.y = lerp(c.y, this.m.y, 0.17);
+      c.dx = lerp(c.dx, this.m.x, 0.42); c.dy = lerp(c.dy, this.m.y, 0.42);
+      c.s = lerp(c.s, c.ts, 0.16);
+      this.ringEl.style.transform = "translate3d(" + c.x + "px," + c.y + "px,0) scale(" + c.s.toFixed(3) + ")";
+      if (this.dotEl) this.dotEl.style.transform = "translate3d(" + c.dx + "px," + c.dy + "px,0)";
+      if (this.labelEl) this.labelEl.style.transform = "translate3d(" + c.x + "px," + c.y + "px,0) translate(-50%,-50%)";
+    }
+
+    if (!this.reduced && this.heroEl && w.scrollY < w.innerHeight * 1.3) {
+      const h = this.h;
+      h.tx = (this.m.x / w.innerWidth - 0.5); h.ty = (this.m.y / w.innerHeight - 0.5);
+      h.x = lerp(h.x, h.tx, 0.05); h.y = lerp(h.y, h.ty, 0.05);
+      this.heroEl.style.transform = "translate3d(" + (h.x * -26).toFixed(2) + "px," + (h.y * -16).toFixed(2) + "px,0)";
+      if (this.videoEl) this.videoEl.style.transform = "scale(1.08) translate3d(" + (h.x * 16).toFixed(2) + "px," + (h.y * 12).toFixed(2) + "px,0)";
+    }
+
+    if (w.scrollY !== this.scrollY) {
+      this.scrollY = w.scrollY;
+      const max = document.documentElement.scrollHeight - w.innerHeight;
+      if (this.progEl) this.progEl.style.width = (max > 0 ? Math.min(100, (this.scrollY / max) * 100) : 0).toFixed(2) + "%";
+      this.sweep();
+      this.paintWords();
+    }
+  };
+
+  /* ============ scroll reveal ============ */
+  registerReveals() {
+    document.querySelectorAll("[data-reveal]").forEach((el) => {
+      if (this.seen.has(el)) return;
+      this.seen.add(el);
+      this.nodes.push(el);
+      el.style.opacity = "0";
+      el.style.transform = "translateY(26px)";
+      el.style.transition = "opacity .9s " + EASE + ", transform 1.05s " + EASE;
+    });
+  }
+  sweep = () => {
+    const vh = window.innerHeight || 800;
+    this.nodes.forEach((el) => {
+      if (el.dataset.anxShown) return;
+      const r = el.getBoundingClientRect();
+      if (r.top < vh * 0.94 && r.bottom > -80) {
+        el.dataset.anxShown = "1";
+        const d = parseInt(el.getAttribute("data-reveal-delay") || "0", 10);
+        setTimeout(() => { el.style.opacity = "1"; el.style.transform = "none"; }, d);
+      }
+    });
+  };
+  revealAll = () => {
+    document.querySelectorAll("[data-reveal]").forEach((el) => {
+      el.style.opacity = "1"; el.style.transform = "none"; el.dataset.anxShown = "1";
+    });
+  };
+
+  heroReveal = () => {
+    const lines = document.querySelectorAll("[data-hero-line]");
+    if (this.reduced) return;  // full text already in the DOM
+    const originals = Array.prototype.map.call(lines, (line) =>
+      Array.prototype.map.call(line.querySelectorAll("[data-hero-type]"), (s) => s.textContent)
+    );
+    lines.forEach((line) => { line.querySelectorAll("[data-hero-type]").forEach((s) => { s.textContent = ""; }); });
+
+    const typeSpan = (span, text, i, onDone) => {
+      if (i >= text.length) { onDone(); return; }
+      span.textContent += text[i];
+      setTimeout(() => typeSpan(span, text, i + 1, onDone), 50 + Math.random() * 30);
+    };
+    const typeLine = (lineIdx) => {
+      if (lineIdx >= lines.length) return;
+      const spans = lines[lineIdx].querySelectorAll("[data-hero-type]");
+      const texts = originals[lineIdx];
+      let spanIdx = 0;
+      const next = () => {
+        if (spanIdx >= spans.length) { setTimeout(() => typeLine(lineIdx + 1), 240); return; }
+        const s = spans[spanIdx]; const t = texts[spanIdx]; spanIdx += 1;
+        typeSpan(s, t, 0, next);
+      };
+      next();
+    };
+    setTimeout(() => typeLine(0), 1000);
+  };
+
+  /* ============ manifesto: split into words, reveal on scroll progress ============ */
+  splitWords(root) {
+    const out = [];
+    const walk = (node) => {
+      Array.prototype.slice.call(node.childNodes).forEach((child) => {
+        if (child.nodeType === 3) {
+          const parts = child.textContent.split(/(\s+)/);
+          const frag = document.createDocumentFragment();
+          parts.forEach((p) => {
+            if (!p) return;
+            if (/^\s+$/.test(p)) { frag.appendChild(document.createTextNode(p)); return; }
+            const s = document.createElement("span");
+            s.textContent = p;
+            s.style.opacity = "0.14";
+            s.style.transition = "opacity .55s " + EASE;
+            frag.appendChild(s); out.push(s);
+          });
+          node.replaceChild(frag, child);
+        } else if (child.nodeType === 1) walk(child);
+      });
+    };
+    walk(root);
+    return out;
+  }
+  paintWords() {
+    if (!this.wordHost || !this.words || !this.words.length) return;
+    const vh = window.innerHeight || 800;
+    const r = this.wordHost.getBoundingClientRect();
+    const p = Math.max(0, Math.min(1, (vh * 0.82 - r.top) / Math.max(1, r.height * 0.75 + vh * 0.2)));
+    const idx = Math.round(p * this.words.length);
+    if (idx === this._idx) return;
+    this._idx = idx;
+    this.words.forEach((s, i) => { s.style.opacity = i < idx ? "1" : "0.14"; });
+  }
+
+  /* ============ interaction layer (tilt, services, magnetic) ============ */
+  enhance() {
+    if (typeof document === "undefined") return;
+    this.registerReveals();
+    this.sweep();
+
+    if (!this.wordHost) {
+      const host = document.querySelector("[data-words]");
+      if (host) {
+        this.wordHost = host;
+        this.words = this.reduced ? [] : this.splitWords(host);
+        this.paintWords();
+      }
+    }
+
+    if (this.reduced) return;
+
+    // 3D tilt cards + pointer glare + media zoom
+    document.querySelectorAll("[data-tilt]").forEach((card) => {
+      if (card._anx) return; card._anx = true;
+      const zoom = card.querySelector("[data-zoom]");
+      const label = card.querySelector("[data-viewcase]");
+      const glare = card.querySelector("[data-glare]");
+      card.addEventListener("pointermove", (e) => {
+        const r = card.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width - 0.5;
+        const py = (e.clientY - r.top) / r.height - 0.5;
+        card.style.transform = "rotateY(" + (px * 7).toFixed(2) + "deg) rotateX(" + (-py * 7).toFixed(2) + "deg) translate3d(0,-8px,0)";
+        if (glare) glare.style.transform = "translate3d(" + (e.clientX - r.left - 160) + "px," + (e.clientY - r.top - 160) + "px,0)";
+      });
+      card.addEventListener("pointerenter", () => {
+        card.style.transition = "transform .3s ease, border-color .5s ease, background .5s ease";
+        if (zoom) zoom.style.transform = "scale(1.08)";
+        if (glare) glare.style.opacity = "1";
+        if (label) { label.style.opacity = "1"; label.style.transform = "translateY(0)"; }
+        clearTimeout(card._t);
+        card._t = setTimeout(() => { card.style.transition = "transform .1s linear, border-color .5s ease, background .5s ease"; }, 300);
+      });
+      card.addEventListener("pointerleave", () => {
+        clearTimeout(card._t);
+        card.style.transition = "transform .8s " + EASE + ", border-color .5s ease, background .5s ease";
+        card.style.transform = "rotateY(0deg) rotateX(0deg) translate3d(0,0,0)";
+        if (zoom) zoom.style.transform = "scale(1)";
+        if (glare) glare.style.opacity = "0";
+        if (label) { label.style.opacity = "0"; label.style.transform = "translateY(10px)"; }
+      });
+    });
+
+    // services: hover expands the row and dims its siblings
+    const rows = Array.prototype.slice.call(document.querySelectorAll("[data-svc]"));
+    rows.forEach((row) => {
+      if (row._anx) return; row._anx = true;
+      const detail = row.querySelector("[data-svc-detail]");
+      const glow = row.querySelector("[data-svc-glow]");
+      row.addEventListener("pointerenter", () => {
+        rows.forEach((o) => { o.style.opacity = o === row ? "1" : "0.3"; });
+        row.style.background = "rgba(255,255,255,0.035)";
+        row.style.paddingLeft = "30px";
+        if (glow) glow.style.width = "45%";
+        if (detail) { detail.style.maxHeight = "80px"; detail.style.opacity = "1"; detail.style.marginTop = "12px"; }
+      });
+      row.addEventListener("pointerleave", () => {
+        rows.forEach((o) => { o.style.opacity = "1"; });
+        row.style.background = "transparent";
+        row.style.paddingLeft = "";
+        if (glow) glow.style.width = "0%";
+        if (detail) { detail.style.maxHeight = "0"; detail.style.opacity = "0"; detail.style.marginTop = "0"; }
+      });
+    });
+
+    // magnetic buttons
+    document.querySelectorAll("[data-magnetic]").forEach((el) => {
+      if (el._anx) return; el._anx = true;
+      el.addEventListener("pointerenter", () => { el.style.transition = "transform .12s linear, background .4s ease, color .4s ease, border-color .4s ease, box-shadow .4s ease"; });
+      el.addEventListener("pointermove", (e) => {
+        const r = el.getBoundingClientRect();
+        el.style.transform = "translate3d(" + ((e.clientX - r.left - r.width / 2) * 0.2).toFixed(1) + "px," + ((e.clientY - r.top - r.height / 2) * 0.35).toFixed(1) + "px,0)";
+      });
+      el.addEventListener("pointerleave", () => {
+        el.style.transition = "transform .6s " + EASE + ", background .4s ease, color .4s ease, border-color .4s ease, box-shadow .4s ease";
+        el.style.transform = "translate3d(0,0,0)";
+      });
+    });
+  }
+
+  /* ============ cursor modes ============ */
+  setCursorMode(t) {
+    if (!this.ringEl) return;
+    const label = t && t.getAttribute ? t.getAttribute("data-cursor-label") : null;
+    if (label) {
+      this.c.ts = 3.1;
+      this.ringEl.style.background = "rgba(255,255,255,0.92)";
+      this.ringEl.style.borderColor = "rgba(255,255,255,0)";
+      if (this.dotEl) this.dotEl.style.opacity = "0";
+      if (this.labelEl) { this.labelEl.textContent = label; this.labelEl.style.opacity = "1"; }
+    } else if (t) {
+      this.c.ts = 1.85;
+      this.ringEl.style.background = "rgba(255,255,255,0.12)";
+      this.ringEl.style.borderColor = "rgba(255,255,255,0.7)";
+      if (this.dotEl) this.dotEl.style.opacity = "0";
+      if (this.labelEl) this.labelEl.style.opacity = "0";
+    } else {
+      this.c.ts = 1;
+      this.ringEl.style.background = "transparent";
+      this.ringEl.style.borderColor = "rgba(255,255,255,0.55)";
+      if (this.dotEl) this.dotEl.style.opacity = "1";
+      if (this.labelEl) this.labelEl.style.opacity = "0";
+    }
+  }
+
+  /* ============ refs & handlers ============ */
+  setRing = (el) => { this.ringEl = el; };
+  setDot = (el) => { this.dotEl = el; };
+  setLabel = (el) => { this.labelEl = el; };
+  setProg = (el) => { this.progEl = el; };
+  setHeroTitle = (el) => { this.heroEl = el; };
+  setVideo = (el) => {
+    this.videoEl = el;
+    if (!el) return;
+    el.muted = true; el.defaultMuted = true;
+    const p = el.play();
+    if (p && p.catch) p.catch(() => {});
+  };
+  toggleMenu = () => this.setState((s) => ({ menuOpen: !s.menuOpen }));
+  closeMenu = () => this.setState({ menuOpen: false });
+  pick = (key, value) => () => {
+    this.setState({ [key]: value });
+    clearTimeout(this._adv);
+    this._adv = setTimeout(() => this.setState((s) => ({ step: Math.min(2, s.step + 1) })), 300);
+  };
+  back = () => this.setState((s) => ({ step: Math.max(0, s.step - 1), error: "" }));
+  field = (key) => (e) => this.setState({ [key]: e.target.value });
+  submit = () => {
+    const { name, email } = this.state;
+    if (!name.trim() || !email.trim() || email.indexOf("@") < 0)
+      return this.setState({ error: "Add your name and a valid email" });
+    this.setState({ step: 3, error: "" });
+  };
+  reset = () => this.setState({ step: 0, service: null, budget: null, name: "", email: "", brief: "", error: "" });
+
+  renderVals() {
+    const s = this.state;
+    const wa = (this.props.whatsappNumber || "5218112345678").replace(/[^0-9]/g, "");
+    return {
+      accent: this.props.accent || "#ffffff",
+      videoSrc: this.props.heroVideoUrl || DEFAULT_VIDEO,
+      showGrain: this.props.grain !== false,
+      pointerFine: s.pointerFine,
+      setRing: this.setRing, setDot: this.setDot, setLabel: this.setLabel,
+      setProg: this.setProg, setHeroTitle: this.setHeroTitle, setVideo: this.setVideo,
+
+      isDesktop: s.vw >= 900, isMobile: s.vw < 900,
+      workGridCols: s.vw < 760 ? "1fr" : "minmax(0,1.35fr) minmax(280px,1fr)",
+      menuOpen: s.menuOpen, toggleMenu: this.toggleMenu, closeMenu: this.closeMenu,
+
+      stepNum: "0" + Math.min(3, s.step + 1),
+      stepPct: [33, 66, 100, 100][s.step] + "%",
+      stepService: s.step === 0, stepBudget: s.step === 1,
+      stepDetails: s.step === 2, stepDone: s.step === 3,
+
+      selWeb: s.service === "web", selLanding: s.service === "landing", sel3d: s.service === "threed",
+      pickWeb: this._pw || (this._pw = this.pick("service", "web")),
+      pickLanding: this._pl || (this._pl = this.pick("service", "landing")),
+      pick3d: this._p3 || (this._p3 = this.pick("service", "threed")),
+
+      selB1: s.budget === "b1", selB2: s.budget === "b2", selB3: s.budget === "b3",
+      pickB1: this._b1 || (this._b1 = this.pick("budget", "b1")),
+      pickB2: this._b2 || (this._b2 = this.pick("budget", "b2")),
+      pickB3: this._b3 || (this._b3 = this.pick("budget", "b3")),
+
+      serviceLabel: SERVICES[s.service] || "Service TBD",
+      budgetLabel: BUDGETS[s.budget] || "Budget TBD",
+      firstName: s.name.trim() ? s.name.trim().split(" ")[0] + "." : "—",
+
+      name: s.name, email: s.email, brief: s.brief,
+      onName: this._fn || (this._fn = this.field("name")),
+      onEmail: this._fe || (this._fe = this.field("email")),
+      onBrief: this._fb || (this._fb = this.field("brief")),
+      hasError: !!s.error, errorMsg: s.error,
+      submit: this.submit, back: this.back, reset: this.reset,
+
+      waHref: "https://wa.me/" + wa + "?text=" + encodeURIComponent("Hola ANX — Quiero iniciar un proyecto.")
+    };
+  }
+}
+</script>
+</body>
+</html>
